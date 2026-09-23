@@ -111,12 +111,12 @@ Playwright/Chromium staat in de cloud-sandbox klaar
 
 ## Home Assistant
 
-- Add-on-slug: `<repo-hash>_hardlopen`; container-hostnaam
-  `<repo-hash>-hardlopen`. De repo-hash hangt af van de repository-URL; wordt
+- Add-on-slug: **`246b612c_hardlopen`** (auto_update + watchdog aan);
+  container-hostnaam `246b612c-hardlopen`. De repo-hash hangt af van de repository-URL; wordt
   de add-on-repo verwijderd en opnieuw toegevoegd, dan verandert de slug en
   moet de Cloudflared-verwijzing mee.
 - **Cloudflared-add-on** (slug `9074a9fa_cloudflared`, lokale tunnel-modus):
   in `additional_hosts` staat
-  `hardlopen.den-hollander.com → http://<repo-hash>-hardlopen:3200`. Na
+  `hardlopen.den-hollander.com → http://246b612c-hardlopen:3200`. Na
   wijzigen de Cloudflared-add-on herstarten; die maakt het DNS-record zelf aan.
-- Logs: `ha_get_logs(source="supervisor", slug="<repo-hash>_hardlopen")`.
+- Logs: `ha_get_logs(source="supervisor", slug="246b612c_hardlopen")`.
