@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- De add-on start nu ook zonder ingevulde toegangscode (dan werkt alleen
+  het Home Assistant-zijpaneel, tot je `access_code` invult).
+
 ## 0.1.0
 
 - **Eerste versie.** Maak hardlooptrainingen met stappen (warming-up,

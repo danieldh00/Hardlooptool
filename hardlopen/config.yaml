@@ -1,5 +1,5 @@
 name: "Hardlopen"
-version: "0.1.0"
+version: "0.1.1"
 slug: hardlopen
 description: >-
   Hardlooptrainingen maken met automatische timers: stel je schema samen
@@ -26,8 +26,9 @@ panel_icon: mdi:run-fast
 panel_title: Hardlopen
 environment:
   DATA_DIR: /data
-options:
-  access_code: null
+# Leeg laten: een `null`-waarde hier maakt de optie voor Supervisor verplicht
+# en dan start de add-on niet zonder code.
+options: {}
 schema:
   # Nodig voor toegang buiten Home Assistant om (tunnel/PWA). Via het
   # HA-zijpaneel (ingress) is geen code nodig.
