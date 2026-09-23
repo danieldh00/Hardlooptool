@@ -1,0 +1,35 @@
+#include <tunables/global>
+
+# AppArmor-profiel voor de Hardlopen-add-on. Supervisor hernoemt het bij
+# installatie naar de slug en laadt het op de host; daarmee telt de add-on
+# als "profile" in de beveiligingsscore van Home Assistant.
+#
+# De container draait een kaal Node-proces (geen s6-overlay, geen bashio),
+# dus alleen Node, de eigen bestanden en /data zijn nodig.
+profile hardlopen flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  file,
+  signal,
+
+  /usr/local/bin/node rix,
+  /bin/** ix,
+  /usr/bin/** ix,
+  /usr/local/bin/** ix,
+  /run/** rwk,
+  /tmp/** rw,
+
+  # Trainingen, geschiedenis en de sessiesleutel.
+  /data/** rw,
+
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability setgid,
+  capability setuid,
+
+  deny mount,
+  deny umount,
+  deny ptrace,
+  deny @{PROC}/sys/kernel/** w,
+}

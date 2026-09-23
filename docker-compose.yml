@@ -1,0 +1,16 @@
+# Lokaal draaien buiten Home Assistant: `ACCESS_CODE=... docker compose up`.
+services:
+  app:
+    build: ./hardlopen
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3200}:3200"
+    environment:
+      - PORT=3200
+      - DATA_DIR=/data
+      - ACCESS_CODE=${ACCESS_CODE:-}
+    volumes:
+      - hardlopen-data:/data
+
+volumes:
+  hardlopen-data:

@@ -1,0 +1,34 @@
+name: "Hardlopen"
+version: "0.1.0"
+slug: hardlopen
+description: >-
+  Hardlooptrainingen maken met automatische timers: stel je schema samen
+  (warming-up, intervallen, herhaalblokken, cooling-down) en laat je tijdens
+  het lopen leiden door piepjes en gesproken aankondigingen. Werkt als
+  installeerbare PWA op iPhone/Android, ook offline.
+url: "https://github.com/danieldh00/Hardlooptool"
+arch:
+  - aarch64
+  - amd64
+startup: application
+boot: auto
+ports:
+  3200/tcp: 3200
+ports_description:
+  3200/tcp: "Webinterface (los van ingress, nodig voor de installeerbare PWA en de Cloudflare-tunnel)"
+# De gepubliceerde poort blijft naast ingress staan: de geïnstalleerde PWA
+# op de telefoon bereikt de app via de tunnel (hardlopen.den-hollander.com),
+# wat via ingress niet kan (het pad wisselt per sessie).
+webui: "http://[HOST]:[PORT:3200]/"
+ingress: true
+ingress_port: 3200
+panel_icon: mdi:run-fast
+panel_title: Hardlopen
+environment:
+  DATA_DIR: /data
+options:
+  access_code: null
+schema:
+  # Nodig voor toegang buiten Home Assistant om (tunnel/PWA). Via het
+  # HA-zijpaneel (ingress) is geen code nodig.
+  access_code: "password?"
