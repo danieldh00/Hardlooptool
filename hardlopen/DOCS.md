@@ -39,6 +39,10 @@ De app luistert op poort 3200. In de Cloudflared-add-on staat daarvoor bij
   omschrijving) en **herhaalblokken** (een reeks stappen die X keer
   herhaald wordt).
 - De gekleurde balk laat de opbouw van de hele training zien.
+- **Schema "Van 0 naar 5 km"**: 10 weken met 2 trainingen per week. De
+  volgende training staat bovenaan klaar; afgeronde trainingen krijgen een
+  ✅ (een gestopte training telt niet mee). Bij de laatste training (5 km)
+  duurt het loopblok 40 minuten: ben je eerder bij 5 km, tik dan op ⏭.
 - Onder **Voorbeelden** staan kant-en-klare schema's; "Kopiëren en
   aanpassen" maakt er een eigen training van.
 

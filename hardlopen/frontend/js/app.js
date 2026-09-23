@@ -1,7 +1,7 @@
 // Router + alle schermen. Hash-routes (#/...) zodat de app onder elk
 // basispad werkt: onder Ingress, via de tunnel en als geïnstalleerde PWA.
 (() => {
-  const { KINDS, PRESETS, flatten, totalDuration, formatDuration, formatSpoken, sanitizeTraining } = Workout;
+  const { KINDS, PRESETS, PROGRAMS, findPreset, flatten, totalDuration, formatDuration, formatSpoken, sanitizeTraining } = Workout;
   const app = document.getElementById('app');
   const READY = { label: 'Klaar voor de start', color: '#475569' };
 
@@ -129,6 +129,7 @@
         ${trainings.length === 0 ? '<p class="muted">Nog geen eigen trainingen. Maak er een of begin met een voorbeeld hieronder.</p>' : ''}
         ${trainings.map((t) => trainingCard(t, false)).join('')}
       </section>
+      ${PROGRAMS.map(programCard).join('')}
       <section>
         <h2>Voorbeelden</h2>
         ${PRESETS.map((p) => trainingCard(p, true)).join('')}
@@ -137,12 +138,61 @@
     app.onclick = (e) => {
       const btn = e.target.closest('[data-copy]');
       if (!btn) return;
-      const preset = PRESETS.find((p) => p.presetId === btn.dataset.copy);
-      const { presetId, ...rest } = preset; // eslint-disable-line no-unused-vars
+      const { presetId, week, session, ...rest } = findPreset(btn.dataset.copy); // eslint-disable-line no-unused-vars
       const saved = Store.trainings.put(JSON.parse(JSON.stringify(rest)));
       syncNow();
       navigate(`#/edit/${saved.id}`);
     };
+  }
+
+  // Loopjes van een voorbeeld/schema krijgen trainingId 'preset-<presetId>'
+  // in de geschiedenis; zo weet het schema welke trainingen al gedaan zijn.
+  function presetTrainingId(presetId) {
+    return `preset-${presetId}`;
+  }
+
+  function completedPresetIds() {
+    return new Set(Store.history.all().filter((h) => h.completed && h.trainingId).map((h) => h.trainingId));
+  }
+
+  function programCard(program) {
+    const done = completedPresetIds();
+    const isDone = (t) => done.has(presetTrainingId(t.presetId));
+    const count = program.trainings.filter(isDone).length;
+    const next = program.trainings.find((t) => !isDone(t));
+    const weeks = [...new Set(program.trainings.map((t) => t.week))];
+    return `
+      <section>
+        <h2>Schema: ${esc(program.name)}</h2>
+        <article class="card program">
+          <p class="notes">${esc(program.description)}</p>
+          <div class="program-progress"><span style="width:${(count / program.trainings.length) * 100}%"></span></div>
+          <p class="muted small">${count} van ${program.trainings.length} trainingen gedaan</p>
+          ${next ? `
+            <div class="program-next">
+              <div>
+                <strong>Volgende: ${esc(next.name)}</strong>
+                <span class="muted small">${esc(next.notes)} · ${formatDuration(totalDuration(next))}</span>
+              </div>
+              <a class="btn primary" href="#/run/${encodeURIComponent(`preset:${next.presetId}`)}">▶ Start</a>
+            </div>` : '<p><strong>🎉 Schema afgerond!</strong></p>'}
+          <details>
+            <summary>Alle trainingen</summary>
+            ${weeks.map((w) => `
+              <h4>Week ${w}</h4>
+              ${program.trainings.filter((t) => t.week === w).map((t) => `
+                <div class="program-row ${isDone(t) ? 'done' : ''}">
+                  <span class="program-check">${isDone(t) ? '✅' : '○'}</span>
+                  <div class="program-info">
+                    <strong>Training ${t.session}</strong>
+                    <span class="muted small">${esc(t.notes)} · ${formatDuration(totalDuration(t))}</span>
+                  </div>
+                  <button class="icon" data-copy="${esc(t.presetId)}" aria-label="Kopiëren en aanpassen" title="Kopiëren en aanpassen">✎</button>
+                  <a class="btn small" href="#/run/${encodeURIComponent(`preset:${t.presetId}`)}">▶</a>
+                </div>`).join('')}`).join('')}
+          </details>
+        </article>
+      </section>`;
   }
 
   function trainingCard(t, isPreset) {
@@ -352,8 +402,8 @@
     if (!id) return null;
     const decoded = decodeURIComponent(id);
     if (decoded.startsWith('preset:')) {
-      const p = PRESETS.find((x) => x.presetId === decoded.slice(7));
-      return p ? { id: null, ...p } : null;
+      const p = findPreset(decoded.slice(7));
+      return p ? { id: presetTrainingId(p.presetId), ...p } : null;
     }
     return Store.trainings.get(decoded);
   }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.2
+
+- **Nieuw schema: Van 0 naar 5 km.** 10 weken, 2 trainingen per week: van
+  1 minuut lopen / 2 minuten wandelen × 8 naar 5 km rustig. Elke training
+  begint met 5 minuten stevig wandelen en eindigt met 5 minuten rustig
+  wandelen.
+- Het schema houdt bij welke trainingen je hebt afgerond (✅) en zet de
+  volgende training bovenaan klaar met één Start-knop.
+- Elke schematraining is ook te kopiëren en aan te passen (✎).
+
 ## 0.1.1
 
 - De add-on start nu ook zonder ingevulde toegangscode (dan werkt alleen

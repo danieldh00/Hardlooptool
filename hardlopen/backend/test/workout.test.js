@@ -55,3 +55,22 @@ test('tijdnotatie', () => {
   assert.equal(W.parseDuration('1:02:00'), 3720);
   assert.ok(Number.isNaN(W.parseDuration('2m')));
 });
+
+test('schema "Van 0 naar 5 km": 20 geldige trainingen met unieke ids', () => {
+  const program = W.PROGRAMS.find((p) => p.id === 'c25k');
+  assert.equal(program.trainings.length, 20);
+  const ids = program.trainings.map((t) => t.presetId);
+  assert.equal(new Set(ids).size, 20);
+  for (const t of program.trainings) {
+    assert.doesNotThrow(() => W.sanitizeTraining(t), t.name);
+    // presetId moet als trainingId in de geschiedenis door de servervalidatie komen
+    assert.match(`preset-${t.presetId}`, /^[A-Za-z0-9_-]{6,64}$/);
+    assert.equal(W.findPreset(t.presetId), t);
+  }
+  // Week 1, training 1: 5 min wandelen, 8 × (1 min lopen + 2 min wandelen), 5 min wandelen
+  const w1 = W.flatten(program.trainings[0]);
+  assert.equal(w1.length, 18);
+  assert.equal(W.totalDuration(program.trainings[0]), 300 + 8 * 180 + 300);
+  // Week 5, training 2: 12 min lopen / 2 min wandelen × 3
+  assert.equal(W.durationByKind(program.trainings[9]).run, 36 * 60);
+});

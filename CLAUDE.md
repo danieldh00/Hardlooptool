@@ -69,7 +69,8 @@ hardlopen/backend/src/
 hardlopen/backend/test/          node --test: workout, runner, server (auth + sync)
 hardlopen/frontend/js/
   workout.js     gedeeld model (ook door de backend ge-require'd): soorten,
-                 validatie, flatten, tijdnotatie, voorbeeldschema's
+                 validatie, flatten, tijdnotatie, voorbeeldschema's (PRESETS)
+                 en meerweekse schema's (PROGRAMS, bv. c25k = 0 naar 5 km)
   storage.js     localStorage (`hl:`-prefix), dirty-vlag per record
   api.js         fetch-wrapper + sync()
   audio.js       Web Audio-piepjes (vooraf ingepland), stille keep-alive,
@@ -97,6 +98,14 @@ hardlopen/frontend/js/
 - Media Session-handlers → bediening via vergrendelscherm/oordopjes.
 - **Nog niet op een echte iPhone getest** met scherm uit — dat is het eerste
   om te verifiëren bij klachten over gemiste signalen.
+
+## Schema's (PROGRAMS)
+
+- Voortgang zit niet in een apart record: een loopje van een voorbeeld- of
+  schematraining krijgt in de geschiedenis `trainingId = 'preset-<presetId>'`
+  en `completed: true` bij afronden. Het schema telt die. **Hernoem daarom
+  nooit een bestaande `presetId`** (bv. `c25k-w3-t1`), anders verdwijnt de
+  voortgang van de gebruiker.
 
 ## Lokaal draaien en testen
 

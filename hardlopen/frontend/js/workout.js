@@ -206,10 +206,75 @@
     },
   ];
 
+  // Opbouwschema "Van 0 naar 5 km": 10 weken, 2 trainingen per week. Elke
+  // training begint met 5 minuten stevig wandelen en eindigt met 5 minuten
+  // rustig uitwandelen.
+  const C25K_WEEKS = [
+    // [lopen (s), wandelen (s), herhalingen] of [doorlopend lopen (s)]
+    [[60, 120, 8], [90, 120, 7]],
+    [[120, 120, 7], [180, 120, 6]],
+    [[240, 120, 5], [300, 120, 4]],
+    [[360, 120, 4], [480, 120, 3]],
+    [[600, 120, 3], [720, 120, 3]],
+    [[min(15)], [min(20)]],
+    [[min(20)], [min(25)]],
+    [[min(25)], [min(30)]],
+    [[min(30)], [min(35)]],
+    [[min(25), 'Heel rustig lopen'], 'finale'],
+  ];
+
+  const minText = (sec) => `${String(sec / 60).replace('.', ',')} min`;
+
+  function c25kTraining(week, session, spec) {
+    const warmup = step('warmup', min(5), 'Stevig wandelen');
+    const cooldown = step('cooldown', min(5), 'Rustig wandelen');
+    const base = { presetId: `c25k-w${week}-t${session}`, week, session };
+    if (spec === 'finale') {
+      return {
+        ...base,
+        name: 'Week 10 – Training 2: 5 km',
+        notes: '🎉 5 km rustig proberen. Het blok duurt 40 minuten; ben je eerder bij 5 km, tik dan op ⏭ voor de cooling-down.',
+        items: [warmup, step('run', min(40), '5 km rustig'), cooldown],
+      };
+    }
+    if (spec.length === 3) {
+      const [run, walk, times] = spec;
+      return {
+        ...base,
+        name: `Week ${week} – Training ${session}`,
+        notes: `${minText(run)} lopen / ${minText(walk)} wandelen × ${times}`,
+        items: [warmup, repeat(times, [step('run', run), step('walk', walk)]), cooldown],
+      };
+    }
+    const [run, label = 'Rustig lopen'] = spec;
+    return {
+      ...base,
+      name: `Week ${week} – Training ${session}`,
+      notes: `${run / 60} min ${label.toLowerCase()}`,
+      items: [warmup, step('run', run, label), cooldown],
+    };
+  }
+
+  const PROGRAMS = [
+    {
+      id: 'c25k',
+      name: 'Van 0 naar 5 km',
+      description: '10 weken, 2 trainingen per week: van 1 minuut lopen naar 5 km rustig. Elke training begint met 5 minuten stevig wandelen en eindigt met 5 minuten rustig wandelen.',
+      trainings: C25K_WEEKS.flatMap((sessions, w) => sessions.map((spec, t) => c25kTraining(w + 1, t + 1, spec))),
+    },
+  ];
+
+  // Voorbeeld of schematraining opzoeken op presetId.
+  function findPreset(presetId) {
+    return PRESETS.find((p) => p.presetId === presetId) || PROGRAMS.flatMap((p) => p.trainings).find((p) => p.presetId === presetId) || null;
+  }
+
   return {
     KINDS,
     LIMITS,
     PRESETS,
+    PROGRAMS,
+    findPreset,
     sanitizeTraining,
     flatten,
     totalDuration,
