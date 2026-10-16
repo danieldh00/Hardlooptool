@@ -129,6 +129,11 @@ Playwright/Chromium staat in de cloud-sandbox klaar
   `hardlopen.den-hollander.com → http://246b612c-hardlopen:3200`. Na
   wijzigen de Cloudflared-add-on herstarten; die maakt het DNS-record zelf aan.
 - Logs: `ha_get_logs(source="supervisor", slug="246b612c_hardlopen")`.
+- `access_code` heeft schema-type `password`, dus Supervisor checkt 'm tegen
+  Have I Been Pwned (repair `issue_addon_pwned`). Oplossing is een nieuwe,
+  willekeurige code — niet het schema-type naar `str` veranderen om de check
+  te omzeilen. De repair verdwijnt pas bij de volgende periodieke
+  Supervisor-check; tot die tijd blijft hij zichtbaar.
 
 ## Architecturen (amd64 + arm64)
 

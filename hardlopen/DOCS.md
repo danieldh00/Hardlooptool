@@ -14,6 +14,12 @@ piepjes en een stem — geen stopwatch meer waar je steeds op moet klikken.
    Het toestel onthoudt de inlog een jaar. Wijzig je de code, dan moeten alle
    toestellen opnieuw inloggen.
 
+   Gebruik een **unieke, willekeurige code** (bv. uit je wachtwoordmanager).
+   Home Assistant controleert wachtwoordvelden tegen de datalek-database van
+   Have I Been Pwned; een bekende of eerder gelekte code geeft de
+   reparatiemelding "Onveilige wachtwoorden aangetroffen in de configuratie
+   van de app".
+
 ## Op je telefoon zetten
 
 Open `https://hardlopen.den-hollander.com` in Safari (iPhone) of Chrome
