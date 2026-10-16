@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3
+
+- **Klaar voor Intel/AMD (amd64) én Raspberry Pi (arm64).** De add-on wordt
+  nu bij elke wijziging automatisch voor beide architecturen gebouwd en
+  getest, zodat een verhuizing van Home Assistant naar bijvoorbeeld een
+  Proxmox-server zonder aanpassingen werkt.
+- Onderliggend bijgewerkt naar Node.js 22 (Node 20 krijgt geen
+  beveiligingsupdates meer).
+
 ## 0.1.2
 
 - **Nieuw schema: Van 0 naar 5 km.** 10 weken, 2 trainingen per week: van

@@ -16,9 +16,32 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: hardlopen/backend/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm audit --omit=dev --audit-level=high
+
+  # Home Assistant Supervisor bouwt de image zelf op de host. Deze job bouwt
+  # 'm voor beide architecturen uit config.yaml (amd64 = Intel/Proxmox,
+  # arm64 = Raspberry Pi) en start de container om te zien dat hij antwoordt.
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Image bouwen (${{ matrix.platform }})
+        run: docker buildx build --platform ${{ matrix.platform }} --load -t hardlopen:test hardlopen
+      - name: Smoketest
+        run: |
+          docker run -d --name hl --platform ${{ matrix.platform }} -p 3200:3200 -e ACCESS_CODE=ci hardlopen:test
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3200/api/health && exit 0; sleep 2; done
+          docker logs hl
+          exit 1

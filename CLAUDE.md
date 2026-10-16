@@ -66,7 +66,7 @@ hardlopen/backend/src/
   store.js       /data/hardlopen.json, merge "laatste updatedAt wint", tombstones
   options.js     /data/options.json + sessiesleutel
   rateLimit.js   in-memory (login: 10 per 15 min)
-hardlopen/backend/test/          node --test: workout, runner, server (auth + sync)
+hardlopen/backend/test/          node --test (Node 22): workout, runner, server (auth + sync)
 hardlopen/frontend/js/
   workout.js     gedeeld model (ook door de backend ge-require'd): soorten,
                  validatie, flatten, tijdnotatie, voorbeeldschema's (PRESETS)
@@ -129,3 +129,23 @@ Playwright/Chromium staat in de cloud-sandbox klaar
   `hardlopen.den-hollander.com → http://246b612c-hardlopen:3200`. Na
   wijzigen de Cloudflared-add-on herstarten; die maakt het DNS-record zelf aan.
 - Logs: `ha_get_logs(source="supervisor", slug="246b612c_hardlopen")`.
+
+## Architecturen (amd64 + arm64)
+
+- `config.yaml` → `arch: [aarch64, amd64]`. Er is geen voorgebouwde image:
+  Supervisor bouwt de `Dockerfile` op de host zelf, voor de eigen CPU.
+  `node:22-alpine` is multi-arch en er zijn **geen native npm-modules**
+  (alleen express) — houd dat zo, of test een nieuwe native dependency
+  expliciet op beide platforms.
+- CI-job `docker` (in `ci.yml`) bouwt de image voor `linux/amd64` én
+  `linux/arm64` (QEMU) en doet een smoketest op `/api/health`.
+- In de cloud-sandbox: docker draait (x86_64), maar `npm ci` binnen een
+  build komt niet door de agent-proxy en er is geen QEMU voor arm64. Test
+  daar met `docker run -v $PWD:/app -w /app/backend node:22-alpine npm test`.
+- **Verhuizing HA van Raspberry Pi naar Proxmox (Intel)**: herstel via een
+  volledige HA-back-up houdt de add-on-repository, slug `246b612c_hardlopen`,
+  `/data` (trainingen, geschiedenis, sessiesleutel) en opties intact; de
+  add-on wordt bij het herstel opnieuw voor amd64 gebouwd. Controleer daarna
+  dat de Cloudflared-route (`246b612c-hardlopen:3200`) nog klopt. Wordt de
+  repo opnieuw toegevoegd in plaats van hersteld, dan verandert de slug —
+  zie hierboven.
